@@ -1,0 +1,4 @@
+{
+  "extends": "@modb.us/tsconfig/vite.json",
+  "include": ["src"]
+}

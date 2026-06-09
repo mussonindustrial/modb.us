@@ -1,0 +1,10 @@
+{
+  "extends": "@modb.us/tsconfig/library.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

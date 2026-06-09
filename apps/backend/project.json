@@ -1,0 +1,12 @@
+{
+  "name": "backend",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/backend",
+        "command": "tsx watch src/server.ts"
+      }
+    }
+  }
+}

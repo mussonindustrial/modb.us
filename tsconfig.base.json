@@ -1,0 +1,3 @@
+{
+  "extends": "@modb.us/tsconfig/base.json"
+}

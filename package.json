@@ -1,0 +1,46 @@
+{
+  "name": "modb.us",
+  "description": "modb.us - The public Modbus server.",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "npx nx run-many build",
+    "serve": "npx nx run-many -t serve",
+    "test": "npx nx run-many -t test",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "workspaces": [
+    "apps/**",
+    "packages/**"
+  ],
+  "dependencies": {
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.31.0",
+    "@tailwindcss/vite": "4.3.0",
+    "@types/node": "25.9.2",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@types/ws": "8.18.1",
+    "@nx/vite": "21.3.11",
+    "@vitejs/plugin-react": "6.0.2",
+    "autoprefixer": "10.5.0",
+    "changeset": "0.2.6",
+    "eslint": "8.57.1",
+    "npx": "10.2.2",
+    "nx": "21.3.11",
+    "prettier": "3.6.2",
+    "postcss": "8.5.15",
+    "tailwindcss": "4.3.0",
+    "ts-node": "10.9.2",
+    "tsx": "4.22.4",
+    "typescript": "5.9.2",
+    "vite": "8.0.16",
+    "vite-tsconfig-paths": "6.1.1",
+    "vitest": "3.2.4",
+    "ws": "8.21.0"
+  },
+  "packageManager": "yarn@1.22.22"
+}

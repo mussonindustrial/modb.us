@@ -1,0 +1,15 @@
+{
+  "extends": "@modb.us/tsconfig/vite.json",
+  "include": ["vite.config.ts"],
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  }
+}
