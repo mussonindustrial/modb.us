@@ -30,5 +30,6 @@
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.spec.json"
     ]
-  }
+  },
+  "analytics": true
 }

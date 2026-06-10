@@ -1,97 +1,120 @@
 import express from 'express'
 import cors from 'cors'
 import http from 'http'
-import { IServiceVector, ServerTCP } from 'modbus-serial'
 import { WebSocketServer } from 'ws'
+import { activeInstances } from './modbus'
+import { db } from './db'
+import { createDnsServer } from './dns'
+import { createRouter } from './router'
 
-export const memory = {
-  holdingRegisters: new Uint16Array(65535),
-  inputRegisters: new Uint16Array(65535),
-  coils: new Array<boolean>(65535).fill(false),
-  discreteInputs: new Array<boolean>(65535).fill(false),
+function startCleanup(timeoutMs: number) {
+  setInterval(() => {
+    const now = Date.now()
+    for (const [serverName, instance] of activeInstances.entries()) {
+      if (now - instance.lastAccessed > timeoutMs) {
+        console.log(
+          `[Manager] Shutting down ${serverName} due to inactivity...`
+        )
+
+        void db.saveState(serverName, {
+          holdingRegisters: instance.memory.holdingRegisters,
+          coils: instance.memory.coils,
+        })
+
+        if (instance.server) {
+          instance.server.close(() => {})
+        }
+
+        activeInstances.delete(serverName)
+      }
+    }
+  }, 5000)
 }
-
-const MODBUS_PORT = 5020
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
-const wss = new WebSocketServer({
-  noServer: true,
-})
+const wss = new WebSocketServer({ noServer: true })
 
-function broadcastState() {
-  const state = {
-    holdingRegisters: Array.from(memory.holdingRegisters),
-    inputRegisters: Array.from(memory.inputRegisters),
-    coils: memory.coils,
-    discreteInputs: memory.discreteInputs,
-    timestamp: Date.now(),
+// function broadcastState(serverName: string) {
+//   const instance = activeInstances.get(serverName)
+//   if (!instance) return
+//
+//   const state = {
+//     serverName,
+//     holdingRegisters: Array.from(instance.memory.holdingRegisters),
+//     coils: instance.memory.coils,
+//     timestamp: Date.now(),
+//   }
+//
+//   const json = JSON.stringify(state)
+//   wss.clients.forEach((client) => {
+//     if (client.readyState === client.OPEN) {
+//       client.send(json)
+//     }
+//   })
+// }
+
+app.get('/api/state/:serverName', async (req, res) => {
+  const { serverName } = req.params
+  const instance = activeInstances.get(serverName)
+
+  if (instance) {
+    res.json({
+      active: true,
+      holdingRegisters: Array.from(instance.memory.holdingRegisters),
+      coils: instance.memory.coils,
+    })
+  } else {
+    const savedState = await db.getState(serverName)
+    res.json({ active: false, ...savedState })
   }
-
-  const json = JSON.stringify(state)
-
-  wss.clients.forEach((client) => {
-    if (client.readyState === client.OPEN) {
-      client.send(json)
-    }
-  })
-}
-
-const vector: IServiceVector = {
-  getHoldingRegister(addr: number) {
-    return memory.holdingRegisters[addr] ?? 0
-  },
-
-  getInputRegister(addr: number) {
-    return memory.inputRegisters[addr] ?? 0
-  },
-
-  getCoil(addr: number) {
-    return memory.coils[addr] ?? false
-  },
-
-  getDiscreteInput(addr: number) {
-    return memory.discreteInputs[addr] ?? false
-  },
-
-  setRegister(addr: number, value: number) {
-    memory.holdingRegisters[addr] = value
-    broadcastState()
-  },
-
-  setCoil(addr: number, value: boolean) {
-    memory.coils[addr] = value
-    broadcastState()
-  },
-}
-
-new ServerTCP(vector, {
-  host: '0.0.0.0',
-  port: MODBUS_PORT,
-  debug: false,
-  unitID: 1,
 })
 
-const PORT = 3001
 const server = http.createServer(app)
-
 server.on('upgrade', (req, socket, head) => {
   wss.handleUpgrade(req, socket, head, (ws) => {
     wss.emit('connection', ws, req)
   })
 })
 
-server.listen(PORT, () => {
-  console.log(`API running on ${PORT}`)
-})
+type ModbUsConfig = {
+  dnsPort: number
+  modbusPort: number
+  httpPort: number
+  ipv6Prefix: string
+  timeoutMs: number
+}
 
-app.get('/api/state', (_req, res) => {
-  res.json({
-    holdingRegisters: Array.from(memory.holdingRegisters),
-    inputRegisters: Array.from(memory.inputRegisters),
-    coils: memory.coils,
-    discreteInputs: memory.discreteInputs,
+export async function startModbUs(config: ModbUsConfig) {
+  const router = createRouter()
+  router.listen(config.modbusPort, '::', () => {
+    console.log(
+      `[Router] Direct IPv6 router listening on [::]:${config.modbusPort}`
+    )
   })
-})
+
+  const dnsServer = createDnsServer({ ipv6Prefix: config.ipv6Prefix })
+  await dnsServer.listen({ udp: config.dnsPort })
+  console.log(`[DNS] Authoritative server running on port ${config.dnsPort}`)
+
+  server.listen(config.httpPort, () => {
+    console.log(`[HTTP/WS] API running on port ${config.httpPort}`)
+  })
+
+  startCleanup(config.timeoutMs)
+
+  return {
+    async close() {
+      router.close()
+      await dnsServer.close()
+      server.close()
+
+      for (const instance of activeInstances.values()) {
+        instance.server.close(() => {})
+      }
+      activeInstances.clear()
+    },
+  }
+}
