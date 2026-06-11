@@ -6,7 +6,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc src/index.ts",
     "start": "node dist/index.js"
   },
   "dependencies": {

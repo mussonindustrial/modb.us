@@ -63,6 +63,11 @@ export class VirtualDeviceModbusTcpServer {
       }
     })
 
+    socket.on('error', (err) => {
+      client.logger.warn({ err }, 'Client socket error occurred')
+      socket.destroy()
+    })
+
     socket.on('close', () => {
       client.logger.info('Client disconnected')
       client.close()
