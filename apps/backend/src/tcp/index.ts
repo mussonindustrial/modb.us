@@ -2,6 +2,7 @@ import { ModbusClient } from '@/client'
 import { ModbusProtocolError } from '@/error'
 import { ModbusMessageHandler, ModbusMessage } from '@/message'
 
+import { Diagnostics } from './Diagnostics'
 import { exception, IllegalFunctionCodeHandler } from './exception'
 import { MaskWriteRegister } from './MaskWriteRegister'
 import { ReadCoils } from './ReadCoils'
@@ -15,6 +16,7 @@ import { WriteCoil } from './WriteCoil'
 import { WriteCoils } from './WriteCoils'
 import { WriteHoldingRegisters } from './WriteHoldingRegisters'
 
+export * from './Diagnostics'
 export * from './exception'
 export * from './MaskWriteRegister'
 export * from './ReadCoils'
@@ -34,6 +36,7 @@ const handlers = {
   4: ReadInputRegisters,
   5: WriteCoil,
   6: WriteHoldingRegister,
+  8: Diagnostics,
   15: WriteCoils,
   16: WriteHoldingRegisters,
   17: ReportSlaveId,
