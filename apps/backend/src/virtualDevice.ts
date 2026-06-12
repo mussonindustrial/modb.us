@@ -1,12 +1,20 @@
 import crypto from 'crypto'
-import { Logger, logger } from './logger'
 import net from 'net'
+
+import {
+  AddressSpace,
+  AllocatedAddressSpace,
+  RegisterType,
+  WritableRegisterType,
+} from '@/addressSpace'
+import { Logger, logger } from '@/logger'
+import { ModbusClient } from '@/client'
 
 export type VirtualDeviceId = string
 
 export class VirtualDevice {
   id: VirtualDeviceId
-  registers: Uint16Array<ArrayBuffer>
+  addressSpace: AddressSpace
   activeConnections: number
   lastAccessed: number
   deviceManager: VirtualDeviceManager
@@ -17,7 +25,7 @@ export class VirtualDevice {
     this.deviceManager = deviceManager
     this.logger = logger.child({ id })
 
-    this.registers = new Uint16Array(65520)
+    this.addressSpace = new AllocatedAddressSpace()
     this.activeConnections = 0
     this.lastAccessed = Date.now()
 
@@ -28,16 +36,16 @@ export class VirtualDevice {
     this.lastAccessed = Date.now()
   }
 
-  read(address: number) {
-    const value = this.registers[address]
+  read(type: RegisterType, address: number) {
+    const value = this.addressSpace.read(type, address)
     this.logger.trace({ address, value }, 'Register read')
     return value
   }
 
-  write(address: number, value: number) {
+  write(type: WritableRegisterType, address: number, value: number) {
     const safeValue = value & 0xffff
     this.logger.trace({ address, value: safeValue }, 'Register write')
-    this.registers[address] = safeValue
+    this.addressSpace.write(type, address, safeValue)
   }
 }
 
@@ -55,14 +63,13 @@ export class VirtualDeviceManager {
 
   async createClientSocket(socket: net.Socket) {
     const id = crypto.randomUUID().replace(/-/g, '')
-    const clientSocket = new ModbusClientSocket(id, socket, this)
+    const clientSocket = new ModbusClient(id, socket, this)
 
     logger.debug(
       { socketId: id, ip: socket.remoteAddress },
       'New client socket created'
     )
 
-    await clientSocket.maybeSwitchVirtualDevice()
     return clientSocket
   }
 
@@ -106,83 +113,6 @@ export class VirtualDeviceManager {
         { closedCount, remaining: this.devices.size },
         'Closed idle virtual devices'
       )
-    }
-  }
-}
-
-export class ModbusClientSocket {
-  switchboardRegisters: Uint16Array<ArrayBuffer>
-  deviceManager: VirtualDeviceManager
-  activeVirtualDevice: VirtualDevice | null = null
-  logger: Logger
-
-  constructor(
-    id: VirtualDeviceId,
-    socket: net.Socket,
-    deviceManager: VirtualDeviceManager
-  ) {
-    this.switchboardRegisters = new Uint16Array(16)
-    this.deviceManager = deviceManager
-
-    this.logger = logger.child({
-      id,
-      ip: socket.remoteAddress,
-    })
-
-    this.writeVirtualDeviceId(id)
-    this.logger.info('Client connected')
-  }
-
-  writeVirtualDeviceId(id: VirtualDeviceId) {
-    const clean = id.replace(/-/g, '').padEnd(32, '0')
-    this.logger.trace({ id: clean }, 'Writing VDID to switchboard registers')
-
-    for (let i = 0; i < 16; i++) {
-      const c1 = clean.charCodeAt(i * 2) || 0
-      const c2 = clean.charCodeAt(i * 2 + 1) || 0
-      this.switchboardRegisters[i] = (c1 << 8) | c2
-    }
-  }
-
-  readVirtualDeviceId() {
-    let id = ''
-    for (let i = 0; i < 16; i++) {
-      const reg = this.switchboardRegisters[i]
-      id += String.fromCharCode((reg >> 8) & 0xff)
-      id += String.fromCharCode(reg & 0xff)
-    }
-    return id.trim()
-  }
-
-  async maybeSwitchVirtualDevice() {
-    const oldId = this.activeVirtualDevice?.id
-    const newId = this.readVirtualDeviceId()
-
-    if (oldId === newId) {
-      return
-    }
-
-    this.logger.debug({ oldId, newId }, 'Virtual Device swap triggered')
-
-    if (this.activeVirtualDevice) {
-      this.activeVirtualDevice.activeConnections--
-      this.activeVirtualDevice.touch()
-    }
-
-    this.activeVirtualDevice = await this.deviceManager.getOrCreate(newId)
-    this.activeVirtualDevice.activeConnections++
-
-    this.logger.info(
-      { oldId, newId },
-      'Client successfully swapped Virtual Device Target'
-    )
-  }
-
-  close() {
-    this.logger.info('Client socket closed, detaching from Virtual Device')
-    if (this.activeVirtualDevice) {
-      this.activeVirtualDevice.activeConnections--
-      this.activeVirtualDevice.touch()
     }
   }
 }

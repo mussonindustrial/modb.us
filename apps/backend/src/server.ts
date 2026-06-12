@@ -1,10 +1,11 @@
 import 'dotenv/config'
 
 import net from 'net'
-import { ModbusFrame } from './frame'
-import { ModbusFunctionCodeHandlers } from './handlers'
+import { ModbusMessage } from './message'
 import { logger } from './logger'
-import { ModbusClientSocket, VirtualDeviceManager } from './virtualDevice'
+import { VirtualDeviceManager } from './virtualDevice'
+import { ModbusTCPMessageHandler } from './tcp'
+import { ModbusClient } from '@/client'
 
 export class VirtualDeviceModbusTcpServer {
   port: number
@@ -30,12 +31,8 @@ export class VirtualDeviceModbusTcpServer {
     this.server.close()
   }
 
-  async handleRequest(frame: ModbusFrame, client: ModbusClientSocket) {
-    const handler =
-      ModbusFunctionCodeHandlers[
-        frame.functionCode as keyof typeof ModbusFunctionCodeHandlers
-      ] ?? ModbusFunctionCodeHandlers.exception
-    return await handler(frame, client)
+  async handleRequest(frame: ModbusMessage, client: ModbusClient) {
+    return await ModbusTCPMessageHandler(frame, client)
   }
 
   async handleConnection(socket: net.Socket) {
@@ -45,7 +42,7 @@ export class VirtualDeviceModbusTcpServer {
       try {
         client.activeVirtualDevice?.touch()
 
-        const frame = ModbusFrame.from(data)
+        const frame = ModbusMessage.from(data)
         client.logger.trace(
           {
             functionCode: frame.functionCode,
