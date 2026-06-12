@@ -1,3 +1,6 @@
+import { BitArray } from '@/utils'
+import { ad } from 'vitest/dist/chunks/reporters.d.BFLkQcL6'
+
 export type RegisterType =
   | 'coil'
   | 'discreteInput'
@@ -16,26 +19,26 @@ export type AddressSpace = {
 }
 
 export class AllocatedAddressSpace implements AddressSpace {
-  coils: Uint8Array<ArrayBuffer>
-  discreteInputs: Uint8Array<ArrayBuffer>
+  coils: BitArray
+  discreteInputs: BitArray
   holdingRegisters: Uint16Array<ArrayBuffer>
   inputRegisters: Uint16Array<ArrayBuffer>
 
-  maxAddress: number = 999
+  static readonly maxAddress: number = 999
 
   constructor() {
-    this.coils = new Uint8Array(999)
-    this.discreteInputs = new Uint8Array(999)
-    this.holdingRegisters = new Uint16Array(999)
-    this.inputRegisters = new Uint16Array(999)
+    this.coils = new BitArray(AllocatedAddressSpace.maxAddress)
+    this.discreteInputs = new BitArray(AllocatedAddressSpace.maxAddress)
+    this.holdingRegisters = new Uint16Array(AllocatedAddressSpace.maxAddress)
+    this.inputRegisters = new Uint16Array(AllocatedAddressSpace.maxAddress)
   }
 
   read(type: RegisterType, address: number): number {
     switch (type) {
       case 'coil':
-        return this.coils[address]
+        return this.coils.get(address)
       case 'discreteInput':
-        return this.discreteInputs[address]
+        return this.discreteInputs.get(address)
       case 'holdingRegister':
         return this.holdingRegisters[address]
       case 'inputRegister':
@@ -48,7 +51,7 @@ export class AllocatedAddressSpace implements AddressSpace {
   write(type: WritableRegisterType, address: number, value: number) {
     switch (type) {
       case 'coil':
-        this.coils[address] = value
+        this.coils.set(address, value)
         break
       case 'holdingRegister': {
         this.holdingRegisters[address] = value

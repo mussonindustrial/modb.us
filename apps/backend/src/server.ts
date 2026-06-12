@@ -1,11 +1,11 @@
 import 'dotenv/config'
 
 import net from 'net'
-import { ModbusMessage } from './message'
-import { logger } from './logger'
-import { VirtualDeviceManager } from './virtualDevice'
-import { ModbusTCPMessageHandler } from './tcp'
 import { ModbusClient } from '@/client'
+import { ModbusMessage } from '@/message'
+import { ModbusTCPMessageHandler } from '@/tcp'
+import { logger } from '@/utils'
+import { VirtualDeviceManager } from '@/virtualDevice'
 
 export class VirtualDeviceModbusTcpServer {
   port: number

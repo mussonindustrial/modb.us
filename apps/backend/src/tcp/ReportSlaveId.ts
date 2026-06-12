@@ -1,14 +1,14 @@
-import { ModbusClient } from '@/client'
 import { ModbusFunctionCodeHandler, ModbusMessage } from '@/message'
 
-export const ReadHoldingRegister: ModbusFunctionCodeHandler = async (
-  frame: ModbusMessage,
-  client: ModbusClient
+export const ReportSlaveId: ModbusFunctionCodeHandler = async (
+  frame: ModbusMessage
 ) => {
-  const start = frame.getUint16(8)
-  const quantity = frame.getUint16(10)
+  const idString = 'modb.us by Musson Industrial'
+  const encoder = new TextEncoder()
+  const additionalData = encoder.encode(idString)
 
-  const byteCount = quantity * 2
+  const byteCount = 2 + additionalData.length
+
   const response = new Uint8Array(9 + byteCount)
   const view = new DataView(
     response.buffer,
@@ -20,16 +20,11 @@ export const ReadHoldingRegister: ModbusFunctionCodeHandler = async (
   view.setUint16(2, frame.protocolId, false)
   view.setUint16(4, byteCount + 3, false)
   view.setUint8(6, frame.unitId)
-  view.setUint8(7, 3)
+  view.setUint8(7, 17)
   view.setUint8(8, byteCount)
-
-  for (let i = 0; i < quantity; i++) {
-    view.setUint16(
-      9 + i * 2,
-      client.addressSpace.read('holdingRegister', start + i),
-      false
-    )
-  }
+  view.setUint8(9, 1)
+  view.setUint8(10, 0xff)
+  response.set(additionalData, 11)
 
   return { response }
 }

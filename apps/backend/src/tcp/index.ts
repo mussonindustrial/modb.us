@@ -3,19 +3,42 @@ import { ModbusProtocolError } from '@/error'
 import { ModbusMessageHandler, ModbusMessage } from '@/message'
 
 import { exception, IllegalFunctionCodeHandler } from './exception'
-import { ReadHoldingRegister } from './readHoldingRegister'
-import { WriteHoldingRegister } from './writeHoldingRegister'
-import { WriteHoldingRegisters } from './writeHoldingRegisters'
+import { MaskWriteRegister } from './MaskWriteRegister'
+import { ReadCoils } from './ReadCoils'
+import { ReadDiscreteInputs } from './ReadDiscreteInputs'
+import { ReadHoldingRegisters } from './ReadHoldingRegisters'
+import { ReadInputRegisters } from './ReadInputRegisters'
+import { ReadWriteMultipleRegisters } from './ReadWriteMultipleRegisters'
+import { ReportSlaveId } from './ReportSlaveId'
+import { WriteHoldingRegister } from './WriteHoldingRegister'
+import { WriteCoil } from './WriteCoil'
+import { WriteCoils } from './WriteCoils'
+import { WriteHoldingRegisters } from './WriteHoldingRegisters'
 
 export * from './exception'
-export * from './readHoldingRegister'
-export * from './writeHoldingRegister'
-export * from './writeHoldingRegisters'
+export * from './MaskWriteRegister'
+export * from './ReadCoils'
+export * from './ReadDiscreteInputs'
+export * from './ReadHoldingRegisters'
+export * from './ReadInputRegisters'
+export * from './ReadWriteMultipleRegisters'
+export * from './ReportSlaveId'
+export * from './WriteHoldingRegister'
+export * from './WriteCoil'
+export * from './WriteHoldingRegisters'
 
 const handlers = {
-  3: ReadHoldingRegister,
+  1: ReadCoils,
+  2: ReadDiscreteInputs,
+  3: ReadHoldingRegisters,
+  4: ReadInputRegisters,
+  5: WriteCoil,
   6: WriteHoldingRegister,
+  15: WriteCoils,
   16: WriteHoldingRegisters,
+  17: ReportSlaveId,
+  22: MaskWriteRegister,
+  23: ReadWriteMultipleRegisters,
   exception: IllegalFunctionCodeHandler,
 }
 

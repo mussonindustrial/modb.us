@@ -1,6 +1,6 @@
 import net from 'net'
 
-import { logger, Logger } from '@/logger'
+import { logger, Logger } from '@/utils/logger'
 import {
   VirtualDevice,
   VirtualDeviceId,

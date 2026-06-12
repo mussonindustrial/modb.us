@@ -7,8 +7,8 @@ import {
   RegisterType,
   WritableRegisterType,
 } from '@/addressSpace'
-import { Logger, logger } from '@/logger'
 import { ModbusClient } from '@/client'
+import { Logger, logger } from '@/utils'
 
 export type VirtualDeviceId = string
 
