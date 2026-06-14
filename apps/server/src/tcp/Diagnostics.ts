@@ -40,7 +40,7 @@ export const Diagnostics: ModbusFunctionCodeHandler = async (
 ) => {
   const subFunction = frame.getUint16(8)
 
-  const handler = handlers[subFunction]
+  const handler = handlers[subFunction as keyof typeof handlers]
   if (!handler) {
     return exception(frame, client, ModbusErrorCode.illegalDataValue)
   }

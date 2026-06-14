@@ -6,8 +6,8 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["ESNext", "DOM"],
-    "sourceMap": true,
-    "noEmit": true
+    "sourceMap": false,
+    "noEmit": false
   },
   "exclude": ["node_modules"]
 }

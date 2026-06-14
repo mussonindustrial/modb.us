@@ -1,0 +1,34 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches: ['main']
+  push:
+    branches-ignore: ['main']
+
+env:
+  NODE_VERSION: 24
+
+jobs:
+  validate:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Build Environment
+        uses: ./.github/actions/configure-build-env
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+
+      - name: Build and Test
+        run: |
+          npx nx affected --target=build --base=origin/main --head=HEAD
+          npx nx affected --target=test --base=origin/main --head=HEAD
+
+      - name: Verify Docker Build
+        run: |
+          npx nx docker-build server

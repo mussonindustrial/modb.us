@@ -10,7 +10,7 @@ export const WriteCoil: ModbusFunctionCodeHandler = async (
 
   const value = rawValue === 0xff00
 
-  client.addressSpace.write('coil', address, value)
+  client.addressSpace.write('coil', address, Number(value))
 
   const response = new Uint8Array(12)
   const view = new DataView(

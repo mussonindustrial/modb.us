@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": [
+        "D:/Universe/Programming/Musson Industrial/modb.us/apps/server/src/*"
+      ]
+    }
+  },
+  "extends": "..\\..\\..\\..\\apps\\server\\tsconfig.json"
+}

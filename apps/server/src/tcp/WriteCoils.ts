@@ -17,7 +17,7 @@ export const WriteCoils: ModbusFunctionCodeHandler = async (
     const byteValue = frame.raw.getUint8(byteIndex)
     const isOn = ((byteValue >> bitIndex) & 1) === 1
 
-    client.addressSpace.write('coil', address, isOn)
+    client.addressSpace.write('coil', address, Number(isOn))
   }
 
   const response = new Uint8Array(12)

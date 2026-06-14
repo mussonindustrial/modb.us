@@ -1,5 +1,4 @@
 import { BitArray } from '@/utils'
-import { ad } from 'vitest/dist/chunks/reporters.d.BFLkQcL6'
 
 export type RegisterType =
   | 'coil'
@@ -36,9 +35,9 @@ export class AllocatedAddressSpace implements AddressSpace {
   read(type: RegisterType, address: number): number {
     switch (type) {
       case 'coil':
-        return this.coils.get(address)
+        return Number(this.coils.get(address))
       case 'discreteInput':
-        return this.discreteInputs.get(address)
+        return Number(this.discreteInputs.get(address))
       case 'holdingRegister':
         return this.holdingRegisters[address]
       case 'inputRegister':
@@ -51,7 +50,7 @@ export class AllocatedAddressSpace implements AddressSpace {
   write(type: WritableRegisterType, address: number, value: number) {
     switch (type) {
       case 'coil':
-        this.coils.set(address, value)
+        this.coils.set(address, value === 1)
         break
       case 'holdingRegister': {
         this.holdingRegisters[address] = value
@@ -61,6 +60,6 @@ export class AllocatedAddressSpace implements AddressSpace {
   }
 
   contains(address: number, length: number): boolean {
-    return address >= 0 && address + length <= this.maxAddress
+    return address >= 0 && address + length <= AllocatedAddressSpace.maxAddress
   }
 }

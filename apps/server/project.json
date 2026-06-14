@@ -1,12 +1,40 @@
 {
-  "name": "backend",
+  "name": "@modb.us/server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "{projectRoot}/src",
+  "projectType": "application",
   "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "inputs": ["production", "^production"],
+      "options": {
+        "outputPath": "dist/{projectRoot}",
+        "main": "{projectRoot}/src/index.ts",
+        "tsConfig": "{projectRoot}/tsconfig.json",
+        "platform": "node",
+        "format": ["esm"],
+        "bundle": true,
+        "thirdParty": false,
+        "target": "node20",
+        "generatePackageJson": true
+      }
+    },
     "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "buildTarget": "@modb.us/server:build",
+        "runBuildTargetDependencies": false,
+        "watch": true
+      }
+    },
+    "docker-build": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apps/backend",
-        "command": "tsx watch src/server.ts"
-      }
+        "command": "docker build -f {projectRoot}/Dockerfile -t mussonindustrial/modb.us-server:latest .",
+        "cwd": "{workspaceRoot}"
+      },
+      "dependsOn": ["build"]
     }
   }
 }

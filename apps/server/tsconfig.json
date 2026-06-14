@@ -1,10 +1,12 @@
 {
-  "extends": "@modb.us/tsconfig/vite.json",
+  "extends": "@modb.us/tsconfig/server.json",
   "include": ["src"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "rootDir": "./src",
+    "outDir": "./dist"
   }
 }
