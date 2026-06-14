@@ -73,4 +73,4 @@ jobs:
         env:
           PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
           REPO_OWNER: ${{ github.repository_owner }}
-        run: ./tools/scripts/publish-docker.sh
+        run: bash ./tools/scripts/publish-docker.sh
