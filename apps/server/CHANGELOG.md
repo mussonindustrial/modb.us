@@ -1,5 +1,11 @@
 # @modb.us/server
 
+## 0.1.3
+
+### Patch Changes
+
+- 5e51515: Initial release.
+
 ## 0.1.2
 
 ### Patch Changes
