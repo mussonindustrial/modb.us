@@ -50,6 +50,9 @@ jobs:
     needs: [changesets]
     if: needs.changesets.outputs.published == 'true'
     runs-on: ubuntu-latest
+    env:
+      PUBLISHED_PACKAGES: ${{ needs.changesets.outputs.publishedPackages }}
+      REPO_OWNER: ${{ github.repository_owner }}
     permissions:
       contents: read
       packages: write
@@ -70,7 +73,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push Docker Image
-        env:
-          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
-          REPO_OWNER: ${{ github.repository_owner }}
         run: bash ./tools/scripts/publish-docker.sh
