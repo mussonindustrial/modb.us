@@ -1,6 +1,6 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
-import { VirtualDeviceManager } from '@/virtualDevice'
+import { VirtualDeviceManager } from '@/virtual-device'
 import { getClientCount } from '@/api/endpoints/clients'
 
 export type ApiServerConfig = {

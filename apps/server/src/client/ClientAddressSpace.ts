@@ -3,8 +3,8 @@ import {
   AddressSpace,
   RegisterType,
   WritableRegisterType,
-} from '@/addressSpace'
-import { VirtualDevice } from '@/virtualDevice'
+} from '@/address-space'
+import { VirtualDevice } from '@/virtual-device'
 import { ModbusProtocolError } from '@/error'
 
 interface ClientAddressSpaceEvents {

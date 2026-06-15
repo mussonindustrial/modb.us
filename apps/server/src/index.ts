@@ -1,17 +1,32 @@
 import { ApiServer } from '@/api'
 import { ModbusTcpServer, ModbusUdpServer } from '@/server'
-import { VirtualDeviceManager } from '@/virtualDevice'
+import { VirtualDeviceManager } from '@/virtual-device'
+import { RtuFrameFactory, TcpFrameFactory } from '@/message'
 
 const virtualDeviceManager = new VirtualDeviceManager()
 
 const tcpServer = new ModbusTcpServer({
-  port: Number(process.env.PORT) || 502,
+  port: 502,
   virtualDeviceManager,
+  frameFactory: TcpFrameFactory,
 })
 
 const udpServer = new ModbusUdpServer({
-  port: Number(process.env.PORT) || 502,
+  port: 502,
   virtualDeviceManager,
+  frameFactory: TcpFrameFactory,
+})
+
+const rtuTcpServer = new ModbusTcpServer({
+  port: 503,
+  virtualDeviceManager,
+  frameFactory: RtuFrameFactory,
+})
+
+const rtuUdpServer = new ModbusUdpServer({
+  port: 503,
+  virtualDeviceManager,
+  frameFactory: RtuFrameFactory,
 })
 
 const api = new ApiServer({
@@ -21,4 +36,8 @@ const api = new ApiServer({
 
 tcpServer.start()
 udpServer.start()
+
+rtuTcpServer.start()
+rtuUdpServer.start()
+
 api.start()

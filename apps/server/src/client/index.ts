@@ -1,2 +1,2 @@
-export * from './addressSpace'
-export * from './client'
+export * from './ClientAddressSpace'
+export * from './ModbusClient'

@@ -45,7 +45,7 @@ const handlers = {
   exception: IllegalFunctionCodeHandler,
 }
 
-export const ModbusTCPMessageHandler: ModbusMessageHandler = async (
+export const ModbusMessageHandlerSet: ModbusMessageHandler = async (
   frame: ModbusMessage,
   client: ModbusClient
 ) => {

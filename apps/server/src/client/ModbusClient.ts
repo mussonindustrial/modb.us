@@ -3,8 +3,8 @@ import {
   VirtualDevice,
   VirtualDeviceId,
   VirtualDeviceManager,
-} from '@/virtualDevice'
-import { ClientAddressSpace } from '@/client/addressSpace'
+} from '@/virtual-device'
+import { ClientAddressSpace } from '@/client/ClientAddressSpace'
 
 export class ModbusClient {
   addressSpace: ClientAddressSpace

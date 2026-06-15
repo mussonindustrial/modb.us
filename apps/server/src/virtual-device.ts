@@ -5,7 +5,7 @@ import {
   InMemoryAddressSpace,
   RegisterType,
   WritableRegisterType,
-} from '@/addressSpace'
+} from '@/address-space'
 import { ModbusClient } from '@/client'
 import { Logger, logger } from '@/utils'
 

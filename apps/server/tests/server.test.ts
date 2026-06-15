@@ -3,12 +3,17 @@ import ModbusRTU from 'modbus-serial'
 
 import { ModbusTcpServer } from '@/server'
 import { vdidToRegisters } from '@/utils'
-import { VirtualDeviceManager } from '@/virtualDevice'
+import { VirtualDeviceManager } from '@/virtual-device'
+import { TcpFrameFactory } from '@/message'
 
 const virtualDeviceManager = new VirtualDeviceManager()
 
 describe('Modbus Gateway Integration Tests', () => {
-  const server = new ModbusTcpServer({ port: 8502, virtualDeviceManager })
+  const server = new ModbusTcpServer({
+    port: 8502,
+    virtualDeviceManager,
+    frameFactory: TcpFrameFactory,
+  })
   const client = new ModbusRTU()
 
   beforeAll(async () => {

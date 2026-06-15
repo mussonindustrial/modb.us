@@ -11,11 +11,11 @@ export class BitArray {
 
   set(index: number, value: boolean) {
     if (value) {
-      this.buffer[index >> 3] |= 1 << (index & 7) // Set bit
+      this.buffer[index >> 3] |= 1 << (index & 7)
       return true
     }
 
-    this.buffer[index >> 3] &= ~(1 << (index & 7)) // Clear bit
+    this.buffer[index >> 3] &= ~(1 << (index & 7))
     return false
   }
 

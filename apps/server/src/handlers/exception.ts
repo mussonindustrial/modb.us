@@ -1,5 +1,7 @@
 import { ModbusClient } from '@/client'
 import { ModbusFunctionCodeHandler, ModbusMessage } from '@/message'
+import { ModbusBuffer } from '@/utils'
+import { ModbusErrorCode } from '@/error'
 
 export const exception = async (
   frame: ModbusMessage,
@@ -11,26 +13,16 @@ export const exception = async (
     'Returning Modbus Exception'
   )
 
-  const response = new Uint8Array(9)
-  const view = new DataView(
-    response.buffer,
-    response.byteOffset,
-    response.byteLength
-  )
+  const buffer = ModbusBuffer.createResponse(2)
+  buffer.setUint8(0, frame.functionCode + 0x80)
+  buffer.setUint8(1, exceptionCode)
 
-  view.setUint16(0, frame.transactionId, false)
-  view.setUint16(2, frame.protocolId, false)
-  view.setUint16(4, 3, false)
-  view.setUint8(6, frame.unitId)
-  view.setUint8(7, frame.functionCode + 0x80)
-  view.setUint8(8, exceptionCode)
-
-  return { response }
+  return { response: frame.createResponse(buffer) }
 }
 
 export const IllegalFunctionCodeHandler: ModbusFunctionCodeHandler = async (
   frame: ModbusMessage,
   client: ModbusClient
 ) => {
-  return exception(frame, client, 1)
+  return exception(frame, client, ModbusErrorCode.illegalFunction)
 }

@@ -73,10 +73,14 @@ export class InMemoryAddressSpace implements AddressSpace {
   write(type: WritableRegisterType, address: number, values: number[]) {
     switch (type) {
       case 'coil':
-        values.forEach((value) => this.coils.set(address, value === 1))
+        values.forEach((value, index) =>
+          this.coils.set(address + index, value === 1)
+        )
         break
       case 'holdingRegister': {
-        values.forEach((value) => (this.holdingRegisters[address] = value))
+        values.forEach(
+          (value, index) => (this.holdingRegisters[address + index] = value)
+        )
         break
       }
     }

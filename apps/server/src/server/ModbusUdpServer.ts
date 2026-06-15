@@ -1,21 +1,23 @@
 import 'dotenv/config'
 
-import { ModbusClient } from '@/client'
-import { ModbusMessage } from '@/message'
-import { ModbusTCPMessageHandler } from '@/tcp'
-import { logger, Logger } from '@/utils'
-import { VirtualDeviceManager } from '@/virtualDevice'
 import * as dgram from 'node:dgram'
+import { ModbusClient } from '@/client'
+import { ModbusFrameFactory, ModbusMessage } from '@/message'
+import { ModbusMessageHandlerSet } from '@/handlers'
+import { logger, Logger } from '@/utils'
+import { VirtualDeviceManager } from '@/virtual-device'
 
 export type ModbusUdpServerConfig = {
   port: number
   virtualDeviceManager: VirtualDeviceManager
+  frameFactory: ModbusFrameFactory
 }
 
 export class ModbusUdpServer {
   port: number
   server: dgram.Socket
   virtualDeviceManager: VirtualDeviceManager
+  frameFactory: ModbusFrameFactory
   logger: Logger
 
   clients: Map<string, ModbusClient> = new Map()
@@ -23,8 +25,11 @@ export class ModbusUdpServer {
   constructor(config: ModbusUdpServerConfig) {
     this.port = config.port
     this.virtualDeviceManager = config.virtualDeviceManager
+    this.frameFactory = config.frameFactory
     this.server = dgram.createSocket('udp4')
+
     this.logger = logger.child({ port: this.port })
+
     this.server.on('error', () => {
       this.server.close()
     })
@@ -41,7 +46,7 @@ export class ModbusUdpServer {
       try {
         client?.activeVirtualDevice?.touch()
 
-        const frame = ModbusMessage.from(msg)
+        const frame = this.frameFactory.fromBuffer(new Uint8Array(msg))
         client.logger.trace(
           {
             functionCode: frame.functionCode,
@@ -62,7 +67,7 @@ export class ModbusUdpServer {
     this.server.on('listening', () => {
       logger.info(
         { port: this.port },
-        `Modbus/TCP Server listening on ${this.port}`
+        `Modbus/UDP Server listening on ${this.port}`
       )
     })
   }
@@ -76,6 +81,6 @@ export class ModbusUdpServer {
   }
 
   async handleRequest(frame: ModbusMessage, client: ModbusClient) {
-    return await ModbusTCPMessageHandler(frame, client)
+    return await ModbusMessageHandlerSet(frame, client)
   }
 }

@@ -2,24 +2,27 @@ import 'dotenv/config'
 
 import net from 'net'
 import { ModbusClient } from '@/client'
-import { ModbusMessage } from '@/message'
-import { ModbusTCPMessageHandler } from '@/tcp'
+import { ModbusFrameFactory, ModbusMessage } from '@/message'
+import { ModbusMessageHandlerSet } from '@/handlers'
 import { logger } from '@/utils'
-import { VirtualDeviceManager } from '@/virtualDevice'
+import { VirtualDeviceManager } from '@/virtual-device'
 
 export type ModbusTcpServerConfig = {
   port: number
   virtualDeviceManager: VirtualDeviceManager
+  frameFactory: ModbusFrameFactory
 }
 
 export class ModbusTcpServer {
   port: number
   server: net.Server
   virtualDeviceManager: VirtualDeviceManager
+  frameFactory: ModbusFrameFactory
 
   constructor(config: ModbusTcpServerConfig) {
     this.port = config.port
     this.virtualDeviceManager = config.virtualDeviceManager
+    this.frameFactory = config.frameFactory
     this.server = net.createServer((socket) => this.handleConnection(socket))
   }
 
@@ -37,7 +40,7 @@ export class ModbusTcpServer {
   }
 
   async handleRequest(frame: ModbusMessage, client: ModbusClient) {
-    return await ModbusTCPMessageHandler(frame, client)
+    return await ModbusMessageHandlerSet(frame, client)
   }
 
   async handleConnection(socket: net.Socket) {
@@ -47,7 +50,7 @@ export class ModbusTcpServer {
       try {
         client.activeVirtualDevice?.touch()
 
-        const frame = ModbusMessage.from(data)
+        const frame = this.frameFactory.fromBuffer(new Uint8Array(data))
         client.logger.trace(
           {
             functionCode: frame.functionCode,
