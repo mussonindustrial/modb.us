@@ -1,5 +1,5 @@
 {
-  "name": "@modb.us/server",
+  "name": "server",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "{projectRoot}/src",
   "projectType": "application",
@@ -23,7 +23,7 @@
     "serve": {
       "executor": "@nx/js:node",
       "options": {
-        "buildTarget": "@modb.us/server:build",
+        "buildTarget": "server:build",
         "runBuildTargetDependencies": false,
         "watch": true
       }

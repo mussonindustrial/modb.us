@@ -1,0 +1,114 @@
+/* --- Main Header Container --- */
+.modbus-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 4rem;
+    background-color: #050505; /* Deep black-gray to blend perfectly into the hero gradient */
+    border-bottom: 2px solid #222222; /* Slightly cleaner dark edge */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6); /* Ground the header above scrolling content */
+}
+
+/* --- Left Side: Brand --- */
+.modbus-header-left {
+    display: flex;
+    align-items: center;
+}
+
+.modbus-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+}
+
+.modbus-logo {
+    height: 32px;
+    width: auto;
+    display: block;
+    image-rendering: pixelated;
+}
+
+.modbus-title {
+    color: #ffffff;
+    font-size: 1.8rem;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    transition: text-shadow 0.2s ease;
+}
+
+/* Tech-blue accent matching the Hero headline */
+.modbus-header-accent {
+    color: #4da6ff;
+    transition: text-shadow 0.2s ease;
+}
+
+/* Interactive brand glow on hover */
+.modbus-brand:hover .modbus-title {
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.modbus-brand:hover .modbus-header-accent {
+    text-shadow: 0 0 12px rgba(77, 166, 255, 0.8);
+}
+
+/* --- Right Side: Links & Attribution --- */
+.modbus-header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* GitHub Icon Link */
+.modbus-github-link {
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.modbus-github-icon {
+    height: 24px;
+    width: auto;
+    display: block;
+    filter: invert(1);
+    image-rendering: pixelated;
+    transition: filter 0.2s ease;
+}
+
+/* Gives the inverted white icon a crisp blue glow on hover */
+.modbus-github-link:hover {
+    opacity: 1;
+}
+
+.modbus-github-link:hover .modbus-github-icon {
+    filter: invert(1) drop-shadow(0 0 4px rgba(77, 166, 255, 0.6));
+}
+
+/* Retro Separator */
+.modbus-separator {
+    color: #333333;
+    font-size: 1.2rem;
+    user-select: none;
+}
+
+/* Attribution Link */
+.modbus-attribution {
+    color: #888888;
+    text-decoration: none;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+/* Shift away from generic underlines to high-tech blue selections */
+.modbus-attribution:hover {
+    color: #4da6ff;
+    text-shadow: 0 0 8px rgba(77, 166, 255, 0.4);
+}

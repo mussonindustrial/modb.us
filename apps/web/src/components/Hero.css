@@ -1,0 +1,125 @@
+/* --- Hero Container (Modern Layout) --- */
+.modbus-hero {
+    /* Account for the 4rem fixed header we made previously */
+    min-height: 100vh;
+    padding-top: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Modern subtle radial gradient to focus the center */
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+    color: #ffffff;
+}
+
+.modbus-hero-content {
+    max-width: 800px;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+/* --- Typography --- */
+.modbus-hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+/* Modern accent color to make "Modbus TCP" pop */
+.modbus-accent {
+    color: #4da6ff; /* A crisp, modern tech blue */
+}
+
+.modbus-hero-subtitle {
+    font-size: 1.25rem;
+    color: #aaaaaa;
+    margin: 0;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+/* --- Retro Terminal Block --- */
+.modbus-terminal-window {
+    width: 100%;
+    max-width: 500px;
+    background-color: transparent;
+    /* A modern touch: a very subtle glow behind the retro window */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(77, 166, 255, 0.1);
+}
+
+.modbus-fieldset {
+    border-color: #555555;
+    background-color: transparent;
+    padding: 1.5rem;
+    text-align: left;
+}
+
+.modbus-legend {
+    color: #aaaaaa;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.modbus-terminal-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    font-family: 'Courier New', Courier, monospace; /* Force terminal font */
+    font-size: 1.1rem;
+}
+
+.modbus-line {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted #333333;
+    padding-bottom: 4px;
+}
+
+.modbus-label {
+    color: #888888;
+}
+
+.modbus-value {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.highlight-green {
+    color: #00ff00; /* Classic terminal green for the main endpoint */
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.3); /* Subtle modern glow */
+}
+
+.blinking-cursor {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* --- Coming Soon Footer --- */
+.modbus-coming-soon {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 1rem;
+    color: #777777;
+    font-size: 0.95rem;
+}
+
+.modbus-badge {
+    background-color: #333333;
+    color: #ffffff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
