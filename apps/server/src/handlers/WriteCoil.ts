@@ -10,7 +10,7 @@ export const WriteCoil: ModbusFunctionCodeHandler = async (
   const rawValue = frame.pdu.getUint16(3)
 
   const value = rawValue === 0xff00
-  client.addressSpace.write('coil', address, [Number(value)])
+  await client.addressSpace.write('coil', address, [Number(value)])
 
   const buffer = ModbusBuffer.createResponse(5)
   buffer.setUint8(0, 5)

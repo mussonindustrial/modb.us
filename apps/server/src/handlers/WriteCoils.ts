@@ -23,7 +23,7 @@ export const WriteCoils: ModbusFunctionCodeHandler = async (
     values.push((byteValue >> bitIndex) & 1)
   }
 
-  client.addressSpace.write('coil', startAddress, values)
+  await client.addressSpace.write('coil', startAddress, values)
 
   const buffer = ModbusBuffer.createResponse(5)
   buffer.setUint8(0, 15)

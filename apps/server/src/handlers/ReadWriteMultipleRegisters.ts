@@ -28,8 +28,8 @@ export const ReadWriteMultipleRegisters: ModbusFunctionCodeHandler = async (
     writeValues[i] = frame.pdu.getUint16(10 + i * 2)
   }
 
-  client.addressSpace.write('holdingRegister', writeAddress, writeValues)
-  const values = client.addressSpace.read(
+  await client.addressSpace.write('holdingRegister', writeAddress, writeValues)
+  const values = await client.addressSpace.read(
     'holdingRegister',
     readAddress,
     readQuantity

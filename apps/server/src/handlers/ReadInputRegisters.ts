@@ -17,7 +17,7 @@ export const ReadInputRegisters: ModbusFunctionCodeHandler = async (
     )
   }
 
-  const values = client.addressSpace.read(
+  const values = await client.addressSpace.read(
     'inputRegister',
     startAddress,
     quantity

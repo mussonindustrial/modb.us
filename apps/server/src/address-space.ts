@@ -12,9 +12,9 @@ export type WritableRegisterType = Extract<
 >
 
 export type AddressSpace = {
-  read(type: RegisterType, address: number, quantity: number): number[]
-  write(type: RegisterType, address: number, values: number[]): void
-  contains(address: number, length: number): boolean
+  read(type: RegisterType, address: number, quantity: number): Promise<number[]>
+  write(type: RegisterType, address: number, values: number[]): Promise<void>
+  contains(address: number, length: number): Promise<boolean>
 }
 
 export class InMemoryAddressSpace implements AddressSpace {
@@ -32,7 +32,11 @@ export class InMemoryAddressSpace implements AddressSpace {
     this.inputRegisters = new Uint16Array(InMemoryAddressSpace.maxAddress)
   }
 
-  read(type: RegisterType, address: number, quantity: number): number[] {
+  async read(
+    type: RegisterType,
+    address: number,
+    quantity: number
+  ): Promise<number[]> {
     const values = new Array(quantity)
 
     switch (type) {
@@ -70,7 +74,7 @@ export class InMemoryAddressSpace implements AddressSpace {
     return values
   }
 
-  write(type: WritableRegisterType, address: number, values: number[]) {
+  async write(type: WritableRegisterType, address: number, values: number[]) {
     switch (type) {
       case 'coil':
         values.forEach((value, index) =>
@@ -86,7 +90,7 @@ export class InMemoryAddressSpace implements AddressSpace {
     }
   }
 
-  contains(address: number, length: number): boolean {
+  async contains(address: number, length: number): Promise<boolean> {
     return address >= 0 && address + length <= InMemoryAddressSpace.maxAddress
   }
 }

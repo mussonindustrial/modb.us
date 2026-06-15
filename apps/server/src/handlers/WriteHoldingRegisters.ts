@@ -23,7 +23,7 @@ export const WriteHoldingRegisters: ModbusFunctionCodeHandler = async (
     values.push(frame.pdu.getUint16(6 + i * 2))
   }
 
-  client.addressSpace.write('holdingRegister', startAddress, values)
+  await client.addressSpace.write('holdingRegister', startAddress, values)
 
   const buffer = ModbusBuffer.createResponse(5)
   buffer.setUint8(0, 16)

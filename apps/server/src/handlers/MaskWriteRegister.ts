@@ -10,15 +10,12 @@ export const MaskWriteRegister: ModbusFunctionCodeHandler = async (
   const andMask = frame.pdu.getUint16(3)
   const orMask = frame.pdu.getUint16(5)
 
-  const currentValue = client.addressSpace.read(
-    'holdingRegister',
-    address,
-    1
-  )[0]
+  const result = await client.addressSpace.read('holdingRegister', address, 1)
+  const currentValue = result[0]
 
   const newValue = (currentValue & andMask) | (orMask & ~andMask & 0xffff)
 
-  client.addressSpace.write('holdingRegister', address, [newValue])
+  await client.addressSpace.write('holdingRegister', address, [newValue])
 
   const buffer = ModbusBuffer.createResponse(7)
   buffer.setUint8(0, 22)

@@ -17,7 +17,7 @@ export const ReadDiscreteInputs: ModbusFunctionCodeHandler = async (
     )
   }
 
-  const values = client.addressSpace.read(
+  const values = await client.addressSpace.read(
     'discreteInput',
     startAddress,
     quantity

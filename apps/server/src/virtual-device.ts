@@ -35,15 +35,19 @@ export class VirtualDevice {
     this.lastAccessed = Date.now()
   }
 
-  read(type: RegisterType, address: number, quantity: number): number[] {
-    const values = this.addressSpace.read(type, address, quantity)
+  async read(
+    type: RegisterType,
+    address: number,
+    quantity: number
+  ): Promise<number[]> {
+    const values = await this.addressSpace.read(type, address, quantity)
     this.logger.trace({ address, values }, 'Register read')
     return values
   }
 
-  write(type: WritableRegisterType, address: number, values: number[]) {
+  async write(type: WritableRegisterType, address: number, values: number[]) {
     this.logger.trace({ address, values }, 'Register write')
-    this.addressSpace.write(type, address, values)
+    await this.addressSpace.write(type, address, values)
   }
 }
 

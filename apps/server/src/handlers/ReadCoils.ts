@@ -17,7 +17,7 @@ export const ReadCoils: ModbusFunctionCodeHandler = async (
     )
   }
 
-  const values = client.addressSpace.read('coil', startAddress, quantity)
+  const values = await client.addressSpace.read('coil', startAddress, quantity)
 
   const byteCount = Math.ceil(quantity / 8)
   const buffer = ModbusBuffer.createResponse(2 + byteCount)

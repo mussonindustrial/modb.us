@@ -46,7 +46,11 @@ export class ClientAddressSpace
     this.emit('deviceIdChanged', this.deviceId)
   }
 
-  read(type: RegisterType, address: number, quantity: number): number[] {
+  async read(
+    type: RegisterType,
+    address: number,
+    quantity: number
+  ): Promise<number[]> {
     if (
       type === 'holdingRegister' &&
       address >= ClientAddressSpace.deviceIdStart
@@ -61,12 +65,12 @@ export class ClientAddressSpace
         'Virtual Device access locked due to rate limiting'
       )
     return (
-      this.getActiveDevice()?.read(type, address, quantity) ??
+      (await this.getActiveDevice()?.read(type, address, quantity)) ??
       new Array(quantity).fill(0)
     )
   }
 
-  write(type: WritableRegisterType, address: number, values: number[]) {
+  async write(type: WritableRegisterType, address: number, values: number[]) {
     if (
       type === 'holdingRegister' &&
       address >= ClientAddressSpace.deviceIdStart
@@ -87,7 +91,7 @@ export class ClientAddressSpace
     return this.getActiveDevice()?.write(type, address, values)
   }
 
-  contains(address: number, quantity: number): boolean {
+  async contains(address: number, quantity: number): Promise<boolean> {
     if (address >= ClientAddressSpace.deviceIdStart) {
       return address + quantity <= ClientAddressSpace.deviceIdStart + 16
     }
