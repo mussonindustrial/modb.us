@@ -4,10 +4,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "npx nx run-many -t build",
-    "serve": "npx nx run-many -t serve",
-    "docker-build": "npx nx run-many -t docker-build",
-    "test": "npx nx run-many -t vite:test",
+    "build": "nx run-many -t build",
+    "serve": "nx run-many -t serve",
+    "docker-build": "nx run-many -t docker-build",
+    "docker-serve": "nx run-many -t docker-serve",
+    "test": "nx run-many -t vite:test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "workspaces": [
@@ -29,9 +30,7 @@
     "@types/ws": "8.18.1",
     "@vitejs/plugin-react": "6.0.2",
     "autoprefixer": "10.5.0",
-    "changeset": "0.2.6",
     "eslint": "8.57.1",
-    "npx": "10.2.2",
     "nx": "22.7.5",
     "postcss": "8.5.15",
     "prettier": "3.6.2",

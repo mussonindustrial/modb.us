@@ -35,6 +35,14 @@
         "cwd": "{workspaceRoot}"
       },
       "dependsOn": ["build"]
+    },
+    "docker-serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker run --rm --name local-modbus-server -p 5020:502 mussonindustrial/modb.us-server:latest",
+        "cwd": "{workspaceRoot}"
+      },
+      "dependsOn": ["docker-build"]
     }
   }
 }
