@@ -1,9 +1,8 @@
 import crypto from 'crypto'
-import net from 'net'
 
 import {
   AddressSpace,
-  AllocatedAddressSpace,
+  InMemoryAddressSpace,
   RegisterType,
   WritableRegisterType,
 } from '@/addressSpace'
@@ -25,7 +24,7 @@ export class VirtualDevice {
     this.deviceManager = deviceManager
     this.logger = logger.child({ id })
 
-    this.addressSpace = new AllocatedAddressSpace()
+    this.addressSpace = new InMemoryAddressSpace()
     this.activeConnections = 0
     this.lastAccessed = Date.now()
 
@@ -36,16 +35,15 @@ export class VirtualDevice {
     this.lastAccessed = Date.now()
   }
 
-  read(type: RegisterType, address: number) {
-    const value = this.addressSpace.read(type, address)
-    this.logger.trace({ address, value }, 'Register read')
-    return value
+  read(type: RegisterType, address: number, quantity: number): number[] {
+    const values = this.addressSpace.read(type, address, quantity)
+    this.logger.trace({ address, values }, 'Register read')
+    return values
   }
 
-  write(type: WritableRegisterType, address: number, value: number) {
-    const safeValue = value & 0xffff
-    this.logger.trace({ address, value: safeValue }, 'Register write')
-    this.addressSpace.write(type, address, safeValue)
+  write(type: WritableRegisterType, address: number, values: number[]) {
+    this.logger.trace({ address, values }, 'Register write')
+    this.addressSpace.write(type, address, values)
   }
 }
 
@@ -61,15 +59,10 @@ export class VirtualDeviceManager {
     logger.info({ ttl: this.deviceTtlMs }, 'Virtual Device Manager initialized')
   }
 
-  async createClientSocket(socket: net.Socket) {
+  async createClient() {
     const id = crypto.randomUUID().replace(/-/g, '')
-    const clientSocket = new ModbusClient(id, socket, this)
-
-    logger.debug(
-      { socketId: id, ip: socket.remoteAddress },
-      'New client socket created'
-    )
-
+    const clientSocket = new ModbusClient(id, this)
+    await clientSocket.executeDeviceSwap()
     return clientSocket
   }
 

@@ -23,13 +23,10 @@ export const ReadInputRegisters: ModbusFunctionCodeHandler = async (
   view.setUint8(7, 4)
   view.setUint8(8, byteCount)
 
-  for (let i = 0; i < quantity; i++) {
-    view.setUint16(
-      9 + i * 2,
-      client.addressSpace.read('inputRegister', start + i),
-      false
-    )
-  }
+  const values = client.addressSpace.read('inputRegister', start, quantity)
+  values.forEach((value, index) => {
+    view.setUint16(9 + index * 2, value, false)
+  })
 
   return { response }
 }

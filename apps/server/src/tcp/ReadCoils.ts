@@ -23,16 +23,15 @@ export const ReadCoils: ModbusFunctionCodeHandler = async (
   view.setUint8(7, 1)
   view.setUint8(8, byteCount)
 
-  for (let i = 0; i < quantity; i++) {
-    const isOn = client.addressSpace.read('coil', start + i)
-
-    if (isOn) {
-      const byteIndex = 9 + Math.floor(i / 8)
-      const bitIndex = i % 8
+  const values = client.addressSpace.read('coil', start, quantity)
+  values.forEach((value, index) => {
+    if (value) {
+      const byteIndex = 9 + Math.floor(index / 8)
+      const bitIndex = index % 8
       const currentByte = view.getUint8(byteIndex)
       view.setUint8(byteIndex, currentByte | (1 << bitIndex))
     }
-  }
+  })
 
   return { response }
 }

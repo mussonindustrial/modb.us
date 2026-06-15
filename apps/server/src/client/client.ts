@@ -1,5 +1,3 @@
-import net from 'net'
-
 import { logger, Logger } from '@/utils/logger'
 import {
   VirtualDevice,
@@ -14,35 +12,20 @@ export class ModbusClient {
   activeVirtualDevice: VirtualDevice | null = null
   logger: Logger
 
-  private swapTimer: NodeJS.Timeout | null = null
-  private lastSwapTime = 0
-  private swapCooldownMs = 5000
-
-  constructor(
-    id: VirtualDeviceId,
-    socket: net.Socket,
-    deviceManager: VirtualDeviceManager
-  ) {
+  constructor(id: VirtualDeviceId, deviceManager: VirtualDeviceManager) {
     this.logger = logger.child({
       id,
-      ip: socket.remoteAddress,
     })
 
     this.deviceManager = deviceManager
 
     this.addressSpace = new ClientAddressSpace(() => this.activeVirtualDevice)
-    this.addressSpace.on('deviceIdChanged', () => {
-      this.queueDeviceSwap()
+    this.addressSpace.on('deviceIdChanged', async () => {
+      await this.executeDeviceSwap()
     })
     this.addressSpace.deviceId = id
-    this.queueDeviceSwap()
 
     this.logger.info('Client connected')
-  }
-
-  private queueDeviceSwap() {
-    if (this.swapTimer) clearTimeout(this.swapTimer)
-    this.swapTimer = setTimeout(() => this.executeDeviceSwap(), 100)
   }
 
   async executeDeviceSwap() {
@@ -50,31 +33,6 @@ export class ModbusClient {
     const newId = this.addressSpace.deviceId
 
     if (oldId === newId) return
-
-    const now = Date.now()
-    const elapsed = now - this.lastSwapTime
-
-    if (elapsed < this.swapCooldownMs) {
-      const remaining = this.swapCooldownMs - elapsed
-
-      this.logger.warn(
-        { oldId, newId, remaining },
-        'Swap rate limit exceeded. Delaying swap.'
-      )
-
-      this.addressSpace.locked = true
-
-      if (this.swapTimer) clearTimeout(this.swapTimer)
-
-      this.swapTimer = setTimeout(() => {
-        this.addressSpace.locked = false
-        this.executeDeviceSwap()
-      }, remaining)
-
-      return
-    }
-
-    this.addressSpace.locked = false
 
     this.logger.debug({ oldId, newId }, 'Virtual Device swap triggered')
 
@@ -86,8 +44,6 @@ export class ModbusClient {
     this.activeVirtualDevice = await this.deviceManager.getOrCreate(newId)
     this.activeVirtualDevice.activeConnections++
 
-    this.lastSwapTime = now
-
     this.logger.info(
       { oldId, newId },
       'Client successfully swapped Virtual Device Target'
@@ -97,7 +53,6 @@ export class ModbusClient {
   close() {
     this.logger.info('Client socket closed, detaching from Virtual Device')
 
-    if (this.swapTimer) clearTimeout(this.swapTimer)
     this.addressSpace.removeAllListeners()
 
     if (this.activeVirtualDevice) {

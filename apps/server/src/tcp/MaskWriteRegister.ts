@@ -9,12 +9,16 @@ export const MaskWriteRegister: ModbusFunctionCodeHandler = async (
   const andMask = frame.getUint16(10)
   const orMask = frame.getUint16(12)
 
-  const currentValue = client.addressSpace.read('holdingRegister', address)
+  const currentValue = client.addressSpace.read(
+    'holdingRegister',
+    address,
+    1
+  )[0]
 
   const notAndMask = ~andMask & 0xffff
   const newValue = (currentValue & andMask) | (orMask & notAndMask)
 
-  client.addressSpace.write('holdingRegister', address, newValue)
+  client.addressSpace.write('holdingRegister', address, [newValue])
 
   const response = new Uint8Array(14)
   const view = new DataView(

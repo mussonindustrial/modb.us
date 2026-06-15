@@ -12,12 +12,12 @@ export type WritableRegisterType = Extract<
 >
 
 export type AddressSpace = {
-  read(type: RegisterType, address: number): number
-  write(type: RegisterType, address: number, value: number): void
+  read(type: RegisterType, address: number, quantity: number): number[]
+  write(type: RegisterType, address: number, values: number[]): void
   contains(address: number, length: number): boolean
 }
 
-export class AllocatedAddressSpace implements AddressSpace {
+export class InMemoryAddressSpace implements AddressSpace {
   coils: BitArray
   discreteInputs: BitArray
   holdingRegisters: Uint16Array<ArrayBuffer>
@@ -26,40 +26,63 @@ export class AllocatedAddressSpace implements AddressSpace {
   static readonly maxAddress: number = 999
 
   constructor() {
-    this.coils = new BitArray(AllocatedAddressSpace.maxAddress)
-    this.discreteInputs = new BitArray(AllocatedAddressSpace.maxAddress)
-    this.holdingRegisters = new Uint16Array(AllocatedAddressSpace.maxAddress)
-    this.inputRegisters = new Uint16Array(AllocatedAddressSpace.maxAddress)
+    this.coils = new BitArray(InMemoryAddressSpace.maxAddress)
+    this.discreteInputs = new BitArray(InMemoryAddressSpace.maxAddress)
+    this.holdingRegisters = new Uint16Array(InMemoryAddressSpace.maxAddress)
+    this.inputRegisters = new Uint16Array(InMemoryAddressSpace.maxAddress)
   }
 
-  read(type: RegisterType, address: number): number {
+  read(type: RegisterType, address: number, quantity: number): number[] {
+    const values = new Array(quantity)
+
     switch (type) {
-      case 'coil':
-        return Number(this.coils.get(address))
-      case 'discreteInput':
-        return Number(this.discreteInputs.get(address))
-      case 'holdingRegister':
-        return this.holdingRegisters[address]
-      case 'inputRegister':
-        return this.inputRegisters[address]
-      default:
-        return 0
+      case 'coil': {
+        for (let i = 0; i < quantity; i++) {
+          values[i] = Number(this.coils.get(address + i))
+        }
+        break
+      }
+      case 'discreteInput': {
+        for (let i = 0; i < quantity; i++) {
+          values[i] = Number(this.discreteInputs.get(address + i))
+        }
+        break
+      }
+      case 'holdingRegister': {
+        for (let i = 0; i < quantity; i++) {
+          values[i] = this.holdingRegisters[address + i]
+        }
+        break
+      }
+      case 'inputRegister': {
+        for (let i = 0; i < quantity; i++) {
+          values[i] = this.inputRegisters[address + i]
+        }
+        break
+      }
+      default: {
+        for (let i = 0; i < quantity; i++) {
+          values[i] = 0
+        }
+      }
     }
+
+    return values
   }
 
-  write(type: WritableRegisterType, address: number, value: number) {
+  write(type: WritableRegisterType, address: number, values: number[]) {
     switch (type) {
       case 'coil':
-        this.coils.set(address, value === 1)
+        values.forEach((value) => this.coils.set(address, value === 1))
         break
       case 'holdingRegister': {
-        this.holdingRegisters[address] = value
+        values.forEach((value) => (this.holdingRegisters[address] = value))
         break
       }
     }
   }
 
   contains(address: number, length: number): boolean {
-    return address >= 0 && address + length <= AllocatedAddressSpace.maxAddress
+    return address >= 0 && address + length <= InMemoryAddressSpace.maxAddress
   }
 }

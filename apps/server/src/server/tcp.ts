@@ -7,22 +7,27 @@ import { ModbusTCPMessageHandler } from '@/tcp'
 import { logger } from '@/utils'
 import { VirtualDeviceManager } from '@/virtualDevice'
 
-export class VirtualDeviceModbusTcpServer {
+export type ModbusTcpServerConfig = {
+  port: number
+  virtualDeviceManager: VirtualDeviceManager
+}
+
+export class ModbusTcpServer {
   port: number
   server: net.Server
   virtualDeviceManager: VirtualDeviceManager
 
-  constructor({ port = 502 }: { port?: number }) {
-    this.port = port
+  constructor(config: ModbusTcpServerConfig) {
+    this.port = config.port
+    this.virtualDeviceManager = config.virtualDeviceManager
     this.server = net.createServer((socket) => this.handleConnection(socket))
-    this.virtualDeviceManager = new VirtualDeviceManager()
   }
 
   start() {
     this.server.listen(this.port, () => {
       logger.info(
         { port: this.port },
-        `Modbus TCP Gateway listening on ${this.port}`
+        `Modbus/TCP Server listening on ${this.port}`
       )
     })
   }
@@ -36,7 +41,7 @@ export class VirtualDeviceModbusTcpServer {
   }
 
   async handleConnection(socket: net.Socket) {
-    const client = await this.virtualDeviceManager.createClientSocket(socket)
+    const client = await this.virtualDeviceManager.createClient()
 
     socket.on('data', async (data: Buffer) => {
       try {

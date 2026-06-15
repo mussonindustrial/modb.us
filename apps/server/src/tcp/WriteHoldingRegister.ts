@@ -8,7 +8,7 @@ export const WriteHoldingRegister: ModbusFunctionCodeHandler = async (
   const address = frame.getUint16(8)
   const value = frame.getUint16(10)
 
-  client.addressSpace.write('holdingRegister', address, value)
+  client.addressSpace.write('holdingRegister', address, [value])
 
   const response = new Uint8Array(12)
   const view = new DataView(

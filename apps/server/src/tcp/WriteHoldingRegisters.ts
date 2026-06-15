@@ -8,11 +8,11 @@ export const WriteHoldingRegisters: ModbusFunctionCodeHandler = async (
   const start = frame.getUint16(8)
   const quantity = frame.getUint16(10)
 
+  const values = new Array(quantity).fill(0)
   for (let i = 0; i < quantity; i++) {
-    const address = start + i
-    const value = frame.raw.getUint16(13 + i * 2, false)
-    client.addressSpace.write('holdingRegister', address, value)
+    values[i] = frame.raw.getUint16(13 + i * 2, false)
   }
+  client.addressSpace.write('holdingRegister', start, values)
 
   const response = new Uint8Array(12)
   const view = new DataView(

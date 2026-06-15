@@ -46,12 +46,13 @@ export class ClientAddressSpace
     this.emit('deviceIdChanged', this.deviceId)
   }
 
-  read(type: RegisterType, address: number): number {
+  read(type: RegisterType, address: number, quantity: number): number[] {
     if (
       type === 'holdingRegister' &&
       address >= ClientAddressSpace.deviceIdStart
     ) {
-      return this.deviceIdMemory[address - ClientAddressSpace.deviceIdStart]
+      const start = address - ClientAddressSpace.deviceIdStart
+      return Array.from(this.deviceIdMemory.slice(start, start + quantity))
     }
 
     if (this.locked)
@@ -59,15 +60,21 @@ export class ClientAddressSpace
         'slaveDeviceBusy',
         'Virtual Device access locked due to rate limiting'
       )
-    return this.getActiveDevice()?.read(type, address) ?? 0
+    return (
+      this.getActiveDevice()?.read(type, address, quantity) ??
+      new Array(quantity).fill(0)
+    )
   }
 
-  write(type: WritableRegisterType, address: number, value: number) {
+  write(type: WritableRegisterType, address: number, values: number[]) {
     if (
       type === 'holdingRegister' &&
       address >= ClientAddressSpace.deviceIdStart
     ) {
-      this.deviceIdMemory[address - ClientAddressSpace.deviceIdStart] = value
+      const start = address - ClientAddressSpace.deviceIdStart
+      values.forEach((value, index) => {
+        this.deviceIdMemory[start + index] = value
+      })
       this.emit('deviceIdChanged', this.deviceId)
       return
     }
@@ -77,7 +84,7 @@ export class ClientAddressSpace
         'slaveDeviceBusy',
         'Virtual Device access locked due to rate limiting'
       )
-    return this.getActiveDevice()?.write(type, address, value)
+    return this.getActiveDevice()?.write(type, address, values)
   }
 
   contains(address: number, quantity: number): boolean {
