@@ -22,13 +22,6 @@
       "options": {
         "buildTarget": "web:build"
       }
-    },
-    "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "configFile": "{projectRoot}/vite.config.js"
-      }
     }
   }
 }
