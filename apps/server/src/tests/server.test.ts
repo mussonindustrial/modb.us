@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import ModbusRTU from 'modbus-serial'
-import { VirtualDeviceModbusTcpServer } from '../src/server'
-import { vdidToRegisters } from '../src/utils'
+import { VirtualDeviceModbusTcpServer } from '@/server'
+import { vdidToRegisters } from '@/utils'
 
 describe('Modbus Gateway Integration Tests', () => {
   const server = new VirtualDeviceModbusTcpServer({ port: 8502 })
