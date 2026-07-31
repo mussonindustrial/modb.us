@@ -31,4 +31,4 @@ jobs:
 
       - name: Verify Docker Build
         run: |
-          npx nx docker-build server
+          npx nx run-many -t docker:build

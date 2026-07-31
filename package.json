@@ -6,8 +6,8 @@
   "scripts": {
     "build": "nx run-many -t build",
     "serve": "nx run-many -t serve",
-    "docker-build": "nx run-many -t docker-build",
-    "docker-serve": "nx run-many -t docker-serve",
+    "docker-build": "nx run-many -t docker:build",
+    "docker-serve": "nx run-many -t docker:serve",
     "test": "nx run-many -t vite:test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

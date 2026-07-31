@@ -22,6 +22,14 @@
       "options": {
         "buildTarget": "web:build"
       }
+    },
+    "docker:build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "cache": false,
+      "options": {
+        "command": "docker build --file apps/web/Dockerfile --tag apps-web ."
+      }
     }
   }
 }

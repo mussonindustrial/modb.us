@@ -26,6 +26,14 @@
         "runBuildTargetDependencies": false,
         "watch": true
       }
+    },
+    "docker:build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "cache": false,
+      "options": {
+        "command": "docker build --file apps/server/Dockerfile --tag apps-server ."
+      }
     }
   }
 }
