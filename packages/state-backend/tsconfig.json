@@ -1,0 +1,6 @@
+{
+  "extends": "@modb.us/tsconfig/library.json",
+  "include": ["src", "tests"],
+  "compilerOptions": {
+  }
+}

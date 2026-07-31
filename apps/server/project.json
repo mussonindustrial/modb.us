@@ -1,5 +1,5 @@
 {
-  "name": "@modb.us/server",
+  "name": "server",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "{projectRoot}/src",
   "projectType": "application",
@@ -15,26 +15,25 @@
         "platform": "node",
         "format": ["esm"],
         "bundle": true,
-        "thirdParty": false,
-        "target": "node20",
+        "target": "node24",
         "generatePackageJson": true
       }
     },
     "serve": {
       "executor": "@nx/js:node",
       "options": {
-        "buildTarget": "@modb.us/server:build",
+        "buildTarget": "server:build",
         "runBuildTargetDependencies": false,
         "watch": true
       }
     },
-    "docker-build": {
+    "docker:build": {
       "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "cache": false,
       "options": {
-        "command": "docker build -f {projectRoot}/Dockerfile -t mussonindustrial/modb.us-server:latest .",
-        "cwd": "{workspaceRoot}"
-      },
-      "dependsOn": ["build"]
+        "command": "docker build --file apps/server/Dockerfile --tag apps-server ."
+      }
     }
   }
 }

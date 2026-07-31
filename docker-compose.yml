@@ -1,0 +1,61 @@
+name: modbus-server-test
+
+x-server: &server
+  build:
+    context: .
+    dockerfile: apps/server/Dockerfile
+  depends_on:
+    redis:
+      condition: service_healthy
+
+services:
+  redis:
+    image: redis:8-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  tcp:
+    <<: *server
+    environment:
+      REDIS_URL: redis://redis:6379
+      SERVER_PROTOCOL: tcp
+      SERVER_PORT: 502
+    ports:
+      - "1502:502/tcp"
+
+  udp:
+    <<: *server
+    environment:
+      REDIS_URL: redis://redis:6379
+      SERVER_PROTOCOL: udp
+      SERVER_PORT: 502
+    ports:
+      - "1502:502/udp"
+
+  rtu-tcp:
+    <<: *server
+    environment:
+      REDIS_URL: redis://redis:6379
+      SERVER_PROTOCOL: rtu-tcp
+      SERVER_PORT: 502
+    ports:
+      - "1503:502/tcp"
+
+  rtu-udp:
+    <<: *server
+    environment:
+      REDIS_URL: redis://redis:6379
+      SERVER_PROTOCOL: rtu-udp
+      SERVER_PORT: 502
+    ports:
+      - "1503:502/udp"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "3000:80"

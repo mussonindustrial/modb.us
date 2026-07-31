@@ -42,3 +42,6 @@ Thumbs.db
 *.swp
 
 /tmp/
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*

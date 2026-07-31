@@ -1,12 +1,10 @@
 {
   "extends": "@modb.us/tsconfig/server.json",
-  "include": ["src"],
+  "include": ["src", "tests"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
-    "rootDir": "./src",
-    "outDir": "./dist"
   }
 }

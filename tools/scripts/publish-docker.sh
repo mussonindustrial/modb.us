@@ -1,30 +1,75 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-if [ -z "$PUBLISHED_PACKAGES" ]; then
-  echo "PUBLISHED_PACKAGES is empty. Exiting."
+if [[ -z "${PUBLISHED_PACKAGES:-}" ]]; then
+  echo "PUBLISHED_PACKAGES is empty. Nothing to publish."
   exit 0
 fi
 
-IS_SERVER_RELEASED=$(echo "$PUBLISHED_PACKAGES" | jq 'any(.[]; .name == "@modb.us/server")')
+if [[ -z "${REPO_OWNER:-}" ]]; then
+  echo "REPO_OWNER is required."
+  exit 1
+fi
 
-if [ "$IS_SERVER_RELEASED" = "true" ]; then
-  echo "Server package updated. Building and pushing Docker image..."
+OWNER_LC=$(printf '%s' "$REPO_OWNER" | tr '[:upper:]' '[:lower:]')
 
-  VERSION=$(node -p "require('./apps/server/package.json').version")
+is_package_released() {
+  local package_name="$1"
 
-  OWNER_LC=$(echo "$REPO_OWNER" | tr '[:upper:]' '[:lower:]')
-  IMAGE_ID="ghcr.io/$OWNER_LC/modb.us-server"
+  jq -e \
+    --arg package_name "$package_name" \
+    'any(.[]; .name == $package_name)' \
+    <<<"$PUBLISHED_PACKAGES" \
+    >/dev/null
+}
 
-  npx nx docker-build server
+publish_image() {
+  local project_name="$1"
+  local package_path="$2"
+  local image_name="$3"
 
-  docker tag mussonindustrial/modb.us-server:latest "$IMAGE_ID:latest"
-  docker tag mussonindustrial/modb.us-server:latest "$IMAGE_ID:$VERSION"
+  local version
+  local image_id
 
-  docker push "$IMAGE_ID:latest"
-  docker push "$IMAGE_ID:$VERSION"
+  version=$(node -p "require('./${package_path}/package.json').version")
+  image_id="ghcr.io/${OWNER_LC}/${image_name}"
 
-  echo "Successfully pushed $IMAGE_ID:$VERSION"
+  echo
+  echo "Publishing ${project_name} ${version}"
+  echo "Image: ${image_id}"
+
+  # Build the Nx application output first.
+  npx nx build "$project_name"
+
+  # Both Dockerfiles use the monorepo root as their build context.
+  docker build \
+    --file "${package_path}/Dockerfile" \
+    --tag "${image_id}:${version}" \
+    --tag "${image_id}:latest" \
+    .
+
+  docker push "${image_id}:${version}"
+  docker push "${image_id}:latest"
+
+  echo "Successfully published:"
+  echo "  ${image_id}:${version}"
+  echo "  ${image_id}:latest"
+}
+
+if is_package_released "@modb.us/server"; then
+  publish_image \
+    "server" \
+    "apps/server" \
+    "modb.us-server"
 else
-  echo "Server package was not updated in this release. Skipping Docker push."
+  echo "Server package was not updated. Skipping server image."
+fi
+
+if is_package_released "@modb.us/web"; then
+  publish_image \
+    "web" \
+    "apps/web" \
+    "modb.us-web"
+else
+  echo "Web package was not updated. Skipping web image."
 fi
