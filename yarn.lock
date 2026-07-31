@@ -2047,6 +2047,15 @@
     tslib "^2.3.0"
     yargs-parser "21.1.1"
 
+"@nx/docker@22.7.5":
+  version "22.7.5"
+  resolved "https://registry.yarnpkg.com/@nx/docker/-/docker-22.7.5.tgz#f3bfd26b60fef15d0c04d608643d74bb461099eb"
+  integrity sha512-IuizX/ACvAjoTIued7eHFDaknSL6WVfDTMtzxiqaY+iDpdOwCVTC1ZXQZSMba/xEsh4owk4qnSRmJ2eWSWburw==
+  dependencies:
+    "@nx/devkit" "22.7.5"
+    enquirer "~2.3.6"
+    tslib "^2.3.0"
+
 "@nx/esbuild@22.7.5":
   version "22.7.5"
   resolved "https://registry.yarnpkg.com/@nx/esbuild/-/esbuild-22.7.5.tgz#c48cbb02cae6e1266f027c1613e2b6b84d81410f"
@@ -2412,6 +2421,33 @@
   integrity sha512-4TJ3DFtlf1L5LDMaM6CanJ/0lckGNtJcMjQ1NAV6zDmA0tEHKZtxNKin8EgPaVX1YzljbxckyT2tJrpQKAtngQ==
   dependencies:
     quansync "^1.0.0"
+
+"@redis/bloom@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@redis/bloom/-/bloom-6.0.0.tgz#35ce2318d865d3a2af2efba9105967f736ce17e1"
+  integrity sha512-P0n5NkV9IIdT6nYXOfMHG83sho8pE7Nay7yw27wOGVLv4DthgvzebpGz6m7VuMTizeJmw3LPw2Xek5wFUhGpVw==
+
+"@redis/client@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@redis/client/-/client-6.0.0.tgz#14ca85b57558b0f4c2710b17f980b01e755bd17f"
+  integrity sha512-NS4iIT25r24sAjNQ2nSRdCW5jPJoV0rxkBee27oTeR+RXaOu89cjIsrww5rPBaYVGVdL1QCx9uz9141gZiSKdQ==
+  dependencies:
+    cluster-key-slot "1.1.2"
+
+"@redis/json@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@redis/json/-/json-6.0.0.tgz#4bf8f4e6854ba5b8e3805c7c523492fb508572c3"
+  integrity sha512-F+eqFfgPcy57Zs1KW7UtLnBtRk6lxAUIoe7dyZerpm6e+ssYXG/dWJrbrHFYs0b7tt6QBtYpVuukBuM9XqhUAg==
+
+"@redis/search@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@redis/search/-/search-6.0.0.tgz#bcc244c7fd71dff4abd056809b3d56ce05fc6f8c"
+  integrity sha512-VHuCJ2W0YWFixGZh/l//8JiyOsD4gN+NhjdRAGIoUe0UQ4mtq1NyY2ZJ973XT+vYhaU21XdK8r8oNrd5n7wbzQ==
+
+"@redis/time-series@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@redis/time-series/-/time-series-6.0.0.tgz#0421f0b66773adf6b5086851a5ed19310d960888"
+  integrity sha512-QWhkYsg+3lhBrBf+cbzybtV8LQcSrk7iXIgTaGU+pHNFTkql7TpVRE24ROS6M2ybVIV6O/zxTqfxgxxYiqyw0Q==
 
 "@remix-run/router@1.23.2":
   version "1.23.2"
@@ -4689,6 +4725,11 @@ clone@1.0.4, clone@^1.0.2:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
   integrity sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==
+
+cluster-key-slot@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/cluster-key-slot/-/cluster-key-slot-1.1.2.tgz#88ddaa46906e303b5de30d3153b7d9fe0a0c19ac"
+  integrity sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==
 
 color-convert@2.0.1, color-convert@^2.0.1:
   version "2.0.1"
@@ -8641,6 +8682,17 @@ real-require@^1.0.0:
   resolved "https://registry.yarnpkg.com/real-require/-/real-require-1.0.0.tgz#e4f0a3737e8060c513b60c2652c58b8ef56bc8a9"
   integrity sha512-P4nbQYQfePJxRSmY+v/KINxVucm4NF3p3s7pJveMTtom52FR4YGltUQLB8idDXwDDWW+eYrWDFbuzUnjoWHF7g==
 
+redis@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/redis/-/redis-6.0.0.tgz#38129fd88f7adab3a99f569f968748af05a4afa8"
+  integrity sha512-n9Thfc39OXleEoPT2k5gwKsqY+HfCww3YS71ofcr9KKbkn89bpjU9dToIlD+JRdM3/GYQkwMtVgTxLyed+LptQ==
+  dependencies:
+    "@redis/bloom" "6.0.0"
+    "@redis/client" "6.0.0"
+    "@redis/json" "6.0.0"
+    "@redis/search" "6.0.0"
+    "@redis/time-series" "6.0.0"
+
 reflect.getprototypeof@^1.0.10, reflect.getprototypeof@^1.0.9:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/reflect.getprototypeof/-/reflect.getprototypeof-1.0.10.tgz#c629219e78a3316d8b604c765ef68996964e7bf9"
@@ -10464,6 +10516,11 @@ yoctocolors@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/yoctocolors/-/yoctocolors-2.1.2.tgz#d795f54d173494e7d8db93150cec0ed7f678c83a"
   integrity sha512-CzhO+pFNo8ajLM2d2IW/R93ipy99LWjtwblvC1RsoSUMZgyLbYFr221TnSNT7GjGdYui6P459mw9JH/g/zW2ug==
+
+zod@4.4.3:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-4.4.3.tgz#b680f172885d18bbebf21a834ea25e55a1bbf356"
+  integrity sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==
 
 zustand@5.0.14:
   version "5.0.14"

@@ -1,43 +1,62 @@
-import { ApiServer } from '@/api'
-import { ModbusTcpServer, ModbusUdpServer } from '@/server'
-import { VirtualDeviceManager } from '@/virtual-device'
-import { RtuFrameFactory, TcpFrameFactory } from '@/message'
+import { createClient } from 'redis'
+import {
+  ModbusTcpServer,
+  TcpFrameFactory,
+  logger,
+  ModbusUdpServer,
+  RtuFrameFactory,
+} from '@modb.us/core'
+import { RedisVirtualDeviceManager } from '@modb.us/state-backend'
+import { env } from '@/config'
 
-const virtualDeviceManager = new VirtualDeviceManager()
+async function bootstrap() {
+  const redisClient = createClient({ url: env.REDIS_URL })
+  await redisClient.connect()
 
-const tcpServer = new ModbusTcpServer({
-  port: 502,
-  virtualDeviceManager,
-  frameFactory: TcpFrameFactory,
-})
+  const virtualDeviceManager = new RedisVirtualDeviceManager(redisClient)
 
-const udpServer = new ModbusUdpServer({
-  port: 502,
-  virtualDeviceManager,
-  frameFactory: TcpFrameFactory,
-})
+  switch (env.SERVER_PROTOCOL) {
+    case 'tcp': {
+      new ModbusTcpServer({
+        port: env.SERVER_PORT,
+        virtualDeviceManager,
+        frameFactory: TcpFrameFactory,
+      }).start()
+      logger.info(`Modbus/TCP Server running on port ${env.SERVER_PORT}`)
+      break
+    }
+    case 'udp': {
+      new ModbusUdpServer({
+        port: env.SERVER_PORT,
+        virtualDeviceManager,
+        frameFactory: TcpFrameFactory,
+      }).start()
+      logger.info(`Modbus/UDP Server running on port ${env.SERVER_PORT}`)
+      break
+    }
+    case 'rtu-tcp': {
+      new ModbusTcpServer({
+        port: env.SERVER_PORT,
+        virtualDeviceManager,
+        frameFactory: RtuFrameFactory,
+      }).start()
+      logger.info(
+        `Modbus/RTU over TCP Server running on port ${env.SERVER_PORT}`
+      )
+      break
+    }
+    case 'rtu-udp': {
+      new ModbusUdpServer({
+        port: env.SERVER_PORT,
+        virtualDeviceManager,
+        frameFactory: RtuFrameFactory,
+      }).start()
+      logger.info(
+        `Modbus/RTU over UDP Server running on port ${env.SERVER_PORT}`
+      )
+      break
+    }
+  }
+}
 
-const rtuTcpServer = new ModbusTcpServer({
-  port: 503,
-  virtualDeviceManager,
-  frameFactory: RtuFrameFactory,
-})
-
-const rtuUdpServer = new ModbusUdpServer({
-  port: 503,
-  virtualDeviceManager,
-  frameFactory: RtuFrameFactory,
-})
-
-const api = new ApiServer({
-  port: 3000,
-  deviceManager: virtualDeviceManager,
-})
-
-tcpServer.start()
-udpServer.start()
-
-rtuTcpServer.start()
-rtuUdpServer.start()
-
-api.start()
+await bootstrap()

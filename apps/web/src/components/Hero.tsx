@@ -4,7 +4,6 @@ export function Hero() {
   return (
     <main className="modbus-hero">
       <div className="modbus-hero-content">
-        {/* Modern Web Typography Header */}
         <h1 className="modbus-hero-title">
           The Global <span className="modbus-accent">Modbus</span> Address Space
         </h1>

@@ -1,8 +1,8 @@
 {
-  "name": "server",
+  "name": "state-backend",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "{projectRoot}/src",
-  "projectType": "application",
+  "projectType": "library",
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
@@ -15,16 +15,9 @@
         "platform": "node",
         "format": ["esm"],
         "bundle": true,
-        "target": "node24",
+        "thirdParty": false,
+        "target": "node20",
         "generatePackageJson": true
-      }
-    },
-    "serve": {
-      "executor": "@nx/js:node",
-      "options": {
-        "buildTarget": "server:build",
-        "runBuildTargetDependencies": false,
-        "watch": true
       }
     }
   }

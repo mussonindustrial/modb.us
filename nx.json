@@ -22,6 +22,13 @@
       }
     },
     {
+      "plugin": "@nx/docker",
+      "options": {
+        "buildTargetName": "docker:build",
+        "runTargetName": "docker:run"
+      }
+    },
+    {
       "plugin": "@nx/eslint/plugin",
       "options": {
         "targetName": "lint"
